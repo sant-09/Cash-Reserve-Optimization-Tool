@@ -1,0 +1,170 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+    
+    // Global Safety Net: Default Deny All
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    // Helper functions
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isOwner(userId) {
+      return isSignedIn() && request.auth.uid == userId;
+    }
+
+    function isValidId(id) {
+      return id is string && id.size() > 0 && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$');
+    }
+
+    function isOwnerRole(userId) {
+      return isOwner(userId) && (
+        !('role' in get(/databases/$(database)/documents/users/$(userId)).data) ||
+        get(/databases/$(database)/documents/users/$(userId)).data.role == 'owner'
+      );
+    }
+
+    function isValidUserProfile(data) {
+      return data.keys().hasAll(['email', 'name']) &&
+             data.email is string && data.email.size() <= 200 &&
+             data.name is string && data.name.size() <= 100 &&
+             (!('role' in data) || (data.role is string && (data.role == 'owner' || data.role == 'finance'))) &&
+             (!('businessName' in data) || (data.businessName is string && data.businessName.size() <= 100));
+    }
+
+    function isValidCashSettings(data) {
+      return data.minCashRequired is number && data.minCashRequired >= 0 &&
+             (!('language' in data) || (data.language is string && (data.language == 'en' || data.language == 'hinglish'))) &&
+             (!('initialBalance' in data) || data.initialBalance is number) &&
+             (!('schemaVersion' in data) || (data.schemaVersion is number && data.schemaVersion >= 1)) &&
+             (!('onboardingCompleted' in data) || data.onboardingCompleted is bool) &&
+             (!('primaryAccountId' in data) || (data.primaryAccountId is string && data.primaryAccountId.size() <= 128)) &&
+             (!('updatedAt' in data) || (data.updatedAt is string && data.updatedAt.size() <= 60));
+    }
+
+    function isValidBankAccount(data) {
+      return data.keys().hasAll(['id', 'name', 'bankName', 'accountType', 'initialBalance']) &&
+             data.id is string && data.id.size() <= 128 &&
+             data.name is string && data.name.size() <= 100 &&
+             data.bankName is string && data.bankName.size() <= 100 &&
+             (data.accountType == 'current' || data.accountType == 'savings' || data.accountType == 'overdraft' || data.accountType == 'cash') &&
+             data.initialBalance is number &&
+             (!('accountNumberMasked' in data) || (data.accountNumberMasked is string && data.accountNumberMasked.size() <= 30)) &&
+             (!('isDefault' in data) || data.isDefault is bool) &&
+             (!('color' in data) || (data.color is string && data.color.size() <= 30)) &&
+             (!('createdAt' in data) || (data.createdAt is string && data.createdAt.size() <= 60));
+    }
+
+    function isValidTransaction(data, userId) {
+      return data.keys().hasAll(['id', 'date', 'type', 'amount', 'category', 'userId']) &&
+             data.id is string && data.id.size() <= 128 &&
+             data.date is string && data.date.size() <= 20 &&
+             (data.type == 'income' || data.type == 'expense') &&
+             data.amount is number && data.amount > 0 &&
+             data.category is string && data.category.size() <= 100 &&
+             data.userId == userId &&
+             (!('accountId' in data) || (data.accountId is string && data.accountId.size() <= 128)) &&
+             (!('note' in data) || (data.note is string && data.note.size() <= 500)) &&
+             (!('paymentMethod' in data) || (data.paymentMethod is string && data.paymentMethod.size() <= 50)) &&
+             (!('isRecurring' in data) || data.isRecurring is bool);
+    }
+
+    function isValidUpcomingCashFlow(data, userId) {
+      return data.keys().hasAll(['id', 'title', 'category', 'amount', 'type', 'dueDate', 'status', 'userId']) &&
+             data.id is string && data.id.size() <= 128 &&
+             data.title is string && data.title.size() <= 200 &&
+             (data.type == 'income' || data.type == 'expense') &&
+             data.amount is number && data.amount > 0 &&
+             data.dueDate is string && data.dueDate.size() <= 20 &&
+             (data.status == 'pending' || data.status == 'completed' || data.status == 'cancelled') &&
+             data.userId == userId &&
+             data.category is string && data.category.size() <= 50 &&
+             (!('recurrence' in data) || (data.recurrence is string && (data.recurrence == 'none' || data.recurrence == 'weekly' || data.recurrence == 'monthly' || data.recurrence == 'quarterly'))) &&
+             (!('accountId' in data) || (data.accountId is string && data.accountId.size() <= 128)) &&
+             (!('notes' in data) || (data.notes is string && data.notes.size() <= 500)) &&
+             (!('createdAt' in data) || (data.createdAt is string && data.createdAt.size() <= 60));
+    }
+
+    function isValidSavedScenario(data, userId) {
+      return data.keys().hasAll(['id', 'name', 'scenario', 'userId']) &&
+             data.id is string && data.id.size() <= 128 &&
+             data.name is string && data.name.size() <= 100 &&
+             data.scenario is map &&
+             data.userId == userId &&
+             (!('description' in data) || (data.description is string && data.description.size() <= 300)) &&
+             (!('isBaseCase' in data) || data.isBaseCase is bool) &&
+             (!('createdAt' in data) || (data.createdAt is string && data.createdAt.size() <= 60)) &&
+             (!('updatedAt' in data) || (data.updatedAt is string && data.updatedAt.size() <= 60));
+    }
+
+    function isValidAlertRule(data) {
+      return data.keys().hasAll(['id', 'name', 'type', 'enabled', 'thresholdValue']) &&
+             data.id is string && data.id.size() <= 128 &&
+             data.name is string && data.name.size() <= 100 &&
+             (data.type == 'runway_below_threshold' || data.type == 'balance_below_reserve' || data.type == 'negative_balance_projected') &&
+             data.enabled is bool &&
+             data.thresholdValue is number && data.thresholdValue >= 0 &&
+             (!('notifyEmail' in data) || (data.notifyEmail is string && data.notifyEmail.size() <= 200)) &&
+             (!('notifyPhone' in data) || (data.notifyPhone is string && data.notifyPhone.size() <= 30));
+    }
+
+    // User profile document
+    match /users/{userId} {
+      allow get: if isOwner(userId);
+      allow create, update: if isOwner(userId) && isValidId(userId) && isValidUserProfile(request.resource.data);
+      allow delete: if false;
+
+      // Cash settings subcollection (Owner Role required to write)
+      match /settings/{settingId} {
+        allow get, list: if isOwner(userId);
+        allow create, update: if isOwnerRole(userId) && isValidId(settingId) && isValidCashSettings(request.resource.data);
+        allow delete: if isOwnerRole(userId);
+      }
+
+      // Accounts subcollection (Phase 2 Multiple Bank Accounts - Owner required to delete)
+      match /accounts/{accountId} {
+        allow get, list: if isOwner(userId);
+        allow create, update: if isOwner(userId) && isValidId(accountId) && isValidBankAccount(request.resource.data);
+        allow delete: if isOwnerRole(userId) && isValidId(accountId);
+      }
+
+      // Transactions subcollection
+      match /transactions/{transactionId} {
+        allow get, list: if isOwner(userId);
+        allow create, update: if isOwner(userId) && isValidId(transactionId) && isValidTransaction(request.resource.data, userId);
+        allow delete: if isOwner(userId) && isValidId(transactionId);
+      }
+
+      // Upcoming Cash Flows subcollection (Phase 3 Upcoming Payments & Receipts)
+      match /upcoming_cashflows/{cashflowId} {
+        allow get, list: if isOwner(userId);
+        allow create, update: if isOwner(userId) && isValidId(cashflowId) && isValidUpcomingCashFlow(request.resource.data, userId);
+        allow delete: if isOwner(userId) && isValidId(cashflowId);
+      }
+
+      // Saved Scenarios subcollection (Phase 3 Named Scenarios & Comparison)
+      match /scenarios/{scenarioId} {
+        allow get, list: if isOwner(userId);
+        allow create, update: if isOwner(userId) && isValidId(scenarioId) && isValidSavedScenario(request.resource.data, userId);
+        allow delete: if isOwner(userId) && isValidId(scenarioId);
+      }
+
+      // Alert Rules subcollection (Phase 4 Alerts - Owner role required to configure)
+      match /alert_rules/{ruleId} {
+        allow get, list: if isOwner(userId);
+        allow create, update, delete: if isOwnerRole(userId) && isValidId(ruleId) && isValidAlertRule(request.resource.data);
+      }
+
+      // Activity Logs subcollection (Phase 4 Audit Trail - Read-only in UI, server-written only)
+      match /activity_logs/{logId} {
+        allow get, list: if isOwner(userId);
+        allow create, update, delete: if false; // Tamper-proof: client cannot write or delete activity logs
+      }
+    }
+  }
+}
+

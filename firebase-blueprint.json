@@ -1,0 +1,107 @@
+{
+  "entities": {
+    "UserProfile": {
+      "title": "UserProfile",
+      "description": "User profile information",
+      "type": "object",
+      "properties": {
+        "email": {
+          "type": "string",
+          "description": "The user's email address"
+        },
+        "name": {
+          "type": "string",
+          "description": "The user's display name"
+        },
+        "businessName": {
+          "type": "string",
+          "description": "The business or entity name"
+        },
+        "updatedAt": {
+          "type": "string",
+          "description": "Timestamp when profile was updated"
+        }
+      },
+      "required": ["email", "name"]
+    },
+    "CashSettings": {
+      "title": "CashSettings",
+      "description": "User's minimum cash reserve and initial balance configuration",
+      "type": "object",
+      "properties": {
+        "initialBalance": {
+          "type": "number",
+          "description": "Starting cash balance in INR"
+        },
+        "minCashRequired": {
+          "type": "number",
+          "description": "Safety reserve buffer in INR"
+        },
+        "updatedAt": {
+          "type": "string",
+          "description": "Timestamp when reserve settings were last saved"
+        }
+      },
+      "required": ["minCashRequired"]
+    },
+    "Transaction": {
+      "title": "Transaction",
+      "description": "Cash flow record of income or expense",
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique transaction identifier"
+        },
+        "date": {
+          "type": "string",
+          "description": "Transaction date YYYY-MM-DD"
+        },
+        "type": {
+          "type": "string",
+          "enum": ["income", "expense"],
+          "description": "Inflow or outflow"
+        },
+        "amount": {
+          "type": "number",
+          "description": "Transaction amount in INR"
+        },
+        "category": {
+          "type": "string",
+          "description": "Category name"
+        },
+        "note": {
+          "type": "string",
+          "description": "Description or reference"
+        },
+        "paymentMethod": {
+          "type": "string",
+          "description": "Payment channel used"
+        },
+        "isRecurring": {
+          "type": "boolean",
+          "description": "Whether this is a recurring monthly bill"
+        },
+        "userId": {
+          "type": "string",
+          "description": "Owner user ID"
+        }
+      },
+      "required": ["id", "date", "type", "amount", "category", "userId"]
+    }
+  },
+  "firestore": {
+    "/users/{userId}": {
+      "schema": "UserProfile",
+      "description": "User profile document"
+    },
+    "/users/{userId}/settings/{settingId}": {
+      "schema": "CashSettings",
+      "description": "Working capital reserve and initial balance settings"
+    },
+    "/users/{userId}/transactions/{transactionId}": {
+      "schema": "Transaction",
+      "description": "User's cash transactions ledger"
+    }
+  }
+}
