@@ -1,21 +1,19 @@
 import React from 'react';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import { CashProvider, useCash } from './context/CashContext';
-import { Navbar } from './components/Navbar';
-import { LoginView } from './components/LoginView';
-import { DashboardView } from './components/DashboardView';
-import { CashFlowView } from './components/CashFlowView';
-import { ForecastView } from './components/ForecastView';
-import { ThreeCashScene } from './components/ThreeCashScene';
-import { RecommendedActionCard } from './components/RecommendedActionCard';
-import { OnboardingWizardModal } from './components/OnboardingWizardModal';
-import { CSVImportModal } from './components/CSVImportModal';
-import { CalculationModal } from './components/CalculationModal';
-import { UpcomingTimelineModal } from './components/UpcomingTimelineModal';
-import { SaveScenarioModal } from './components/SaveScenarioModal';
-import { MonthlyReportModal } from './components/MonthlyReportModal';
-import { AlertSettingsModal } from './components/AlertSettingsModal';
-import { ActivityLogModal } from './components/ActivityLogModal';
+import { Navbar, RecommendedActionCard } from './components/common';
+import { LoginView, DashboardView, CashFlowView, ForecastView } from './components/views';
+import { ThreeCashScene } from './components/vault';
+import {
+  OnboardingWizardModal,
+  CSVImportModal,
+  CalculationModal,
+  UpcomingTimelineModal,
+  SaveScenarioModal,
+  MonthlyReportModal,
+  AlertSettingsModal,
+  ActivityLogModal,
+} from './components/modals';
 
 const AppContent: React.FC = () => {
   const { isAuthenticated } = useAuth();

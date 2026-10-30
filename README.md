@@ -13,6 +13,51 @@ CashWise is a cash reserve optimization and working-capital forecasting platform
 
 ---
 
+## Clean Folder Structure
+
+```
+cashwise---cash-reserve-optimization/
+├── src/                                  # Frontend Application (React 19 + TypeScript)
+│   ├── components/                       # Organized Modular UI Components
+│   │   ├── common/                       # Shared UI & navigation (Navbar, StatusBadge, etc.)
+│   │   ├── modals/                       # Dialogs (CSVImportModal, BankAccountsModal, etc.)
+│   │   ├── vault/                        # 3D Three.js & Flat 2D architectural visualizations
+│   │   ├── views/                        # Core views (DashboardView, CashFlowView, ForecastView, LoginView)
+│   │   └── index.ts                      # Central component barrel export
+│   ├── context/                          # Global State Management (AuthContext, CashContext)
+│   ├── data/                             # Demo Seed Data & Constants
+│   ├── lib/                              # Firebase & Cloud Service Integrations
+│   ├── types/                            # TypeScript Domain Types & Interfaces
+│   ├── utils/                            # Shared Financial Calculation Engine & Math
+│   ├── App.tsx                           # Main Application Container
+│   ├── index.css                         # Tailwind CSS 4 Styling
+│   └── main.tsx                          # Application Entry Point
+│
+├── server/                               # Backend Application (Node.js + Express)
+│   ├── middleware/                       # Request Middleware (verifyAuthToken, requireRole)
+│   ├── routes/                           # Modular API Controllers (finance, accounts, scenarios, etc.)
+│   ├── store/                            # In-Memory State Store & Activity Logger
+│   ├── app.ts                            # Express App Configuration & Vite Middleware
+│   └── index.ts                          # Server Bootstrap & Port Listener
+│
+├── tests/                                # Full-Stack Test Suite (61 Automated Tests)
+│   ├── e2e-sync.test.ts
+│   ├── finance.test.ts
+│   ├── phase2.test.ts
+│   ├── phase3.test.ts
+│   ├── phase4.test.ts
+│   ├── phase5.test.ts
+│   ├── server.test.ts
+│   └── validation.test.ts
+│
+├── server.ts                             # Main server entry point & testing export
+├── firestore.rules                       # Firestore Security Rules & Validation
+├── package.json                          # Package scripts & dependencies
+└── tsconfig.json                         # TypeScript compiler configuration
+```
+
+---
+
 ## Phase 1: Dashboard Clarity & Working Capital Enhancements
 
 1. **Headline Summary Card in Plain Language**:
