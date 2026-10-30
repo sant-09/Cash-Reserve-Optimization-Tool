@@ -83,3 +83,4 @@ accountRouter.delete('/accounts/:id', verifyAuthToken, requireRole(['owner']), (
     timestamp: new Date().toISOString(),
   } as ApiResponse);
 });
+

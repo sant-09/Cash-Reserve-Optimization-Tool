@@ -36,3 +36,4 @@ reportRouter.get('/report/monthly', verifyAuthToken, (req: Request, res: Respons
     } as ApiResponse);
   }
 });
+

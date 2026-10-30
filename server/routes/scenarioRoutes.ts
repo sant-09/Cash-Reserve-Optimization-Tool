@@ -157,3 +157,4 @@ scenarioRouter.post('/forecast/compare', verifyAuthToken, (req: Request, res: Re
     } as ApiResponse);
   }
 });
+

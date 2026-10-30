@@ -1,7 +1,7 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { X, Check, Building2 } from 'lucide-react';
-import { Transaction, TransactionCategory, TransactionType } from '../../types/finance';
-import { useCash } from '../../context/CashContext';
+import { Transaction, TransactionCategory } from '../../types/finance';
+import { useTransactionForm, INCOME_CATEGORIES, EXPENSE_CATEGORIES } from '../../hooks';
 
 interface TransactionModalProps {
   isOpen: boolean;
@@ -10,102 +10,35 @@ interface TransactionModalProps {
   initialData?: Transaction | null;
 }
 
-const INCOME_CATEGORIES: TransactionCategory[] = [
-  'Client Payment',
-  'Product Sales',
-  'Consulting / Services',
-  'Other Inflow',
-];
-
-const EXPENSE_CATEGORIES: TransactionCategory[] = [
-  'Staff Salaries',
-  'Office Rent',
-  'Inventory / Stock',
-  'Vendor / Supplier',
-  'Utilities & Wifi',
-  'Taxes & GST',
-  'Marketing & Ads',
-  'Software & SaaS',
-  'Logistics & Shipping',
-  'Miscellaneous Expense',
-];
-
 export const TransactionModal: React.FC<TransactionModalProps> = ({
   isOpen,
   onClose,
   onSave,
   initialData,
 }) => {
-  const { accounts, primaryAccountId } = useCash();
-  const [type, setType] = useState<TransactionType>('income');
-  const [amount, setAmount] = useState<string>('');
-  const [category, setCategory] = useState<TransactionCategory>('Client Payment');
-  const [date, setDate] = useState<string>(new Date().toISOString().split('T')[0]);
-  const [accountId, setAccountId] = useState<string>(primaryAccountId || 'acc-primary');
-  const [note, setNote] = useState<string>('');
-  const [paymentMethod, setPaymentMethod] = useState<'UPI' | 'NEFT / RTGS' | 'Cheque' | 'Card' | 'Cash'>('UPI');
-  const [isRecurring, setIsRecurring] = useState<boolean>(false);
-  const [error, setError] = useState<string | null>(null);
-
-  useEffect(() => {
-    if (initialData) {
-      setType(initialData.type);
-      setAmount(initialData.amount.toString());
-      setCategory(initialData.category);
-      setDate(initialData.date);
-      setAccountId(initialData.accountId || primaryAccountId || accounts[0]?.id || 'acc-primary');
-      setNote(initialData.note);
-      setPaymentMethod(initialData.paymentMethod || 'UPI');
-      setIsRecurring(!!initialData.isRecurring);
-    } else {
-      setType('income');
-      setAmount('');
-      setCategory('Client Payment');
-      setDate(new Date().toISOString().split('T')[0]);
-      setAccountId(primaryAccountId || accounts[0]?.id || 'acc-primary');
-      setNote('');
-      setPaymentMethod('UPI');
-      setIsRecurring(false);
-    }
-    setError(null);
-  }, [initialData, isOpen, primaryAccountId, accounts]);
-
-  // When type changes, adjust default category
-  const handleTypeChange = (newType: TransactionType) => {
-    setType(newType);
-    if (newType === 'income' && !INCOME_CATEGORIES.includes(category)) {
-      setCategory('Client Payment');
-    } else if (newType === 'expense' && !EXPENSE_CATEGORIES.includes(category)) {
-      setCategory('Vendor / Supplier');
-    }
-  };
+  const {
+    accounts,
+    type,
+    amount,
+    setAmount,
+    category,
+    setCategory,
+    date,
+    setDate,
+    accountId,
+    setAccountId,
+    note,
+    setNote,
+    paymentMethod,
+    setPaymentMethod,
+    isRecurring,
+    setIsRecurring,
+    error,
+    handleTypeChange,
+    handleSubmit,
+  } = useTransactionForm(isOpen, initialData, onSave, onClose);
 
   if (!isOpen) return null;
-
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    const numAmount = parseFloat(amount);
-    if (isNaN(numAmount) || numAmount <= 0) {
-      setError('Please enter a valid amount greater than ₹0');
-      return;
-    }
-    if (!date) {
-      setError('Please select a valid transaction date');
-      return;
-    }
-
-    onSave({
-      date,
-      type,
-      amount: numAmount,
-      category,
-      note: note.trim() || `${type === 'income' ? 'Received' : 'Paid'} for ${category}`,
-      paymentMethod,
-      isRecurring,
-      accountId,
-    });
-    onClose();
-  };
 
   const categories = type === 'income' ? INCOME_CATEGORIES : EXPENSE_CATEGORIES;
 

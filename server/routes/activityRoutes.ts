@@ -13,3 +13,4 @@ activityRouter.get('/activity-logs', verifyAuthToken, (_req: Request, res: Respo
     timestamp: new Date().toISOString(),
   } as ApiResponse<ActivityLogEntry[]>);
 });
+

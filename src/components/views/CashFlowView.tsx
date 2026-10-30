@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react';
+import React from 'react';
 import {
   Plus,
   Search,
@@ -16,8 +16,7 @@ import {
   FileSpreadsheet,
   Lock,
 } from 'lucide-react';
-import { useCash } from '../../context/CashContext';
-import { Transaction, TransactionType } from '../../types/finance';
+import { useCashFlowData } from '../../hooks';
 import { exportTransactionsToCSV, formatINR, formatCompactINR } from '../../utils/finance';
 import { TransactionModal } from '../modals/TransactionModal';
 import { ExportCSVModal } from '../modals/ExportCSVModal';
@@ -28,185 +27,46 @@ import { RecommendedActionCard } from '../common/RecommendedActionCard';
 export const CashFlowView: React.FC = () => {
   const {
     transactions,
-    addTransaction,
-    updateTransaction,
-    deleteTransaction,
     minCashRequired,
-    setMinCashRequired,
-    applyAutoRecommendedReserve,
     metrics,
     accounts,
-    canPerform,
-  } = useCash();
-
-  const canManageSettings = canPerform('manage_settings');
-
-  // Modal states
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [isExportModalOpen, setIsExportModalOpen] = useState(false);
-  const [isImportModalOpen, setIsImportModalOpen] = useState(false);
-  const [editingTx, setEditingTx] = useState<Transaction | null>(null);
-
-  // Filters
-  const [searchQuery, setSearchQuery] = useState('');
-  const [typeFilter, setTypeFilter] = useState<'all' | TransactionType>('all');
-  const [accountFilter, setAccountFilter] = useState<string>('all');
-  const [dateRangeFilter, setDateRangeFilter] = useState<'all' | '7d' | '30d' | 'this_month'>('all');
-  const [categoryFilter, setCategoryFilter] = useState<string>('all');
-  const [quickFilter, setQuickFilter] = useState<'all' | 'high_value' | 'recurring'>('all');
-
-  // Reports Toggle: Daily vs Monthly
-  const [reportView, setReportView] = useState<'daily' | 'monthly'>('monthly');
-
-  // Manual reserve input state
-  const [tempMinReserve, setTempMinReserve] = useState(minCashRequired.toString());
-  const [reserveSavedFeedback, setReserveSavedFeedback] = useState(false);
-
-  // Filter transactions
-  const filteredTransactions = useMemo(() => {
-    const today = new Date();
-
-    return transactions.filter((tx) => {
-      // Type filter
-      if (typeFilter !== 'all' && tx.type !== typeFilter) return false;
-
-      // Account filter (Phase 2)
-      if (accountFilter !== 'all' && (tx.accountId || 'acc-primary') !== accountFilter) return false;
-
-      // Category filter
-      if (categoryFilter !== 'all' && tx.category !== categoryFilter) return false;
-
-      // Quick filter
-      if (quickFilter === 'high_value' && tx.amount < 50000) return false;
-      if (quickFilter === 'recurring' && !tx.isRecurring) return false;
-
-      // Search query
-      if (searchQuery.trim()) {
-        const query = searchQuery.toLowerCase();
-        const matchNote = tx.note.toLowerCase().includes(query);
-        const matchCategory = tx.category.toLowerCase().includes(query);
-        const matchMethod = (tx.paymentMethod || '').toLowerCase().includes(query);
-        if (!matchNote && !matchCategory && !matchMethod) return false;
-      }
-
-      // Date range filter
-      if (dateRangeFilter !== 'all') {
-        const txDate = new Date(tx.date);
-        const diffTime = today.getTime() - txDate.getTime();
-        const diffDays = diffTime / (1000 * 3600 * 24);
-
-        if (dateRangeFilter === '7d' && diffDays > 7) return false;
-        if (dateRangeFilter === '30d' && diffDays > 30) return false;
-        if (dateRangeFilter === 'this_month') {
-          if (
-            txDate.getMonth() !== today.getMonth() ||
-            txDate.getFullYear() !== today.getFullYear()
-          ) {
-            return false;
-          }
-        }
-      }
-
-      return true;
-    });
-  }, [transactions, typeFilter, categoryFilter, searchQuery, dateRangeFilter]);
-
-  // Unique categories for filter dropdown
-  const availableCategories = useMemo(() => {
-    const set = new Set<string>();
-    transactions.forEach((t) => set.add(t.category));
-    return Array.from(set).sort();
-  }, [transactions]);
-
-  // Aggregated Summary calculation for current filtered view
-  const summary = useMemo(() => {
-    let totalInflow = 0;
-    let totalOutflow = 0;
-
-    filteredTransactions.forEach((tx) => {
-      if (tx.type === 'income') totalInflow += tx.amount;
-      else totalOutflow += tx.amount;
-    });
-
-    const netFlow = totalInflow - totalOutflow;
-    const savingsRatio = totalInflow > 0 ? (netFlow / totalInflow) * 100 : 0;
-
-    return {
-      totalInflow,
-      totalOutflow,
-      netFlow,
-      savingsRatio,
-      count: filteredTransactions.length,
-    };
-  }, [filteredTransactions]);
-
-  // Grouped reports breakdown (Daily or Monthly)
-  const reportBreakdown = useMemo(() => {
-    const groups: { [key: string]: { key: string; label: string; income: number; expense: number; net: number; count: number } } = {};
-
-    transactions.forEach((tx) => {
-      const d = new Date(tx.date);
-      let key = '';
-      let label = '';
-
-      if (reportView === 'daily') {
-        key = tx.date;
-        label = d.toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' });
-      } else {
-        key = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`;
-        label = d.toLocaleDateString('en-IN', { month: 'long', year: 'numeric' });
-      }
-
-      if (!groups[key]) {
-        groups[key] = { key, label, income: 0, expense: 0, net: 0, count: 0 };
-      }
-
-      if (tx.type === 'income') {
-        groups[key].income += tx.amount;
-      } else {
-        groups[key].expense += tx.amount;
-      }
-      groups[key].net = groups[key].income - groups[key].expense;
-      groups[key].count += 1;
-    });
-
-    return Object.values(groups).sort((a, b) => b.key.localeCompare(a.key));
-  }, [transactions, reportView]);
-
-  // Handlers
-  const handleEditClick = (tx: Transaction) => {
-    setEditingTx(tx);
-    setIsModalOpen(true);
-  };
-
-  const handleAddNewClick = () => {
-    setEditingTx(null);
-    setIsModalOpen(true);
-  };
-
-  const handleSaveTransaction = (txData: Omit<Transaction, 'id'>) => {
-    if (editingTx) {
-      updateTransaction(editingTx.id, txData);
-    } else {
-      addTransaction(txData);
-    }
-  };
-
-  const handleDelete = (id: string, note: string) => {
-    if (confirm(`Are you sure you want to delete "${note}"?`)) {
-      deleteTransaction(id);
-    }
-  };
-
-  const handleSaveMinReserve = (e: React.FormEvent) => {
-    e.preventDefault();
-    const val = parseFloat(tempMinReserve);
-    if (!isNaN(val) && val >= 0) {
-      setMinCashRequired(val);
-      setReserveSavedFeedback(true);
-      setTimeout(() => setReserveSavedFeedback(false), 2000);
-    }
-  };
+    canManageSettings,
+    isModalOpen,
+    setIsModalOpen,
+    isExportModalOpen,
+    setIsExportModalOpen,
+    isImportModalOpen,
+    setIsImportModalOpen,
+    editingTx,
+    handleEditClick,
+    handleAddNewClick,
+    handleSaveTransaction,
+    handleDelete,
+    searchQuery,
+    setSearchQuery,
+    typeFilter,
+    setTypeFilter,
+    accountFilter,
+    setAccountFilter,
+    dateRangeFilter,
+    setDateRangeFilter,
+    categoryFilter,
+    setCategoryFilter,
+    quickFilter,
+    setQuickFilter,
+    reportView,
+    setReportView,
+    tempMinReserve,
+    setTempMinReserve,
+    reserveSavedFeedback,
+    handleSaveMinReserve,
+    handleAutoReserve,
+    applyAutoRecommendedReserve,
+    filteredTransactions,
+    availableCategories,
+    summary,
+    reportBreakdown,
+  } = useCashFlowData();
 
   const handleExportCSV = () => {
     setIsExportModalOpen(true);

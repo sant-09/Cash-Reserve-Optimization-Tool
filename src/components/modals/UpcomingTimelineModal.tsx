@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react';
+import React from 'react';
 import {
   Calendar,
   X,
@@ -18,9 +18,9 @@ import {
   Layers,
   Sparkles,
 } from 'lucide-react';
-import { useCash } from '../../context/CashContext';
+import { useUpcomingFlowsLogic } from '../../hooks';
 import { formatINR, formatCompactINR } from '../../utils/finance';
-import { UpcomingCashFlow, UpcomingCashFlowCategory, UpcomingCashFlowRecurrence } from '../../types/finance';
+import { UpcomingCashFlowCategory, UpcomingCashFlowRecurrence } from '../../types/finance';
 
 interface UpcomingTimelineModalProps {
   isOpen: boolean;
@@ -40,119 +40,37 @@ const CATEGORY_ICONS: Record<UpcomingCashFlowCategory, { label: string; icon: an
 
 export const UpcomingTimelineModal: React.FC<UpcomingTimelineModalProps> = ({ isOpen, onClose }) => {
   const {
-    upcomingCashFlows,
-    addUpcomingCashFlow,
-    updateUpcomingCashFlow,
-    deleteUpcomingCashFlow,
-    markUpcomingCashFlowStatus,
     accounts,
     primaryAccountId,
-  } = useCash();
-
-  const [activeTab, setActiveTab] = useState<'all' | 'outflow' | 'income'>('all');
-  const [showAddForm, setShowAddForm] = useState<boolean>(false);
-  const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
-
-  // Form State
-  const [title, setTitle] = useState('');
-  const [amount, setAmount] = useState<string>('');
-  const [type, setType] = useState<'income' | 'expense'>('expense');
-  const [category, setCategory] = useState<UpcomingCashFlowCategory>('payroll');
-  const [dueDate, setDueDate] = useState<string>(() => {
-    const d = new Date();
-    d.setDate(d.getDate() + 7);
-    return d.toISOString().split('T')[0];
-  });
-  const [recurrence, setRecurrence] = useState<UpcomingCashFlowRecurrence>('none');
-  const [targetAccountId, setTargetAccountId] = useState<string>(primaryAccountId);
-  const [notes, setNotes] = useState('');
-  const [errorMsg, setErrorMsg] = useState<string | null>(null);
-
-  // 30-Day Metrics Breakdown
-  const summary30D = useMemo(() => {
-    const now = new Date();
-    const limit30 = new Date(now.getTime() + 30 * 86400000);
-
-    let committedOutflows = 0;
-    let expectedInflows = 0;
-    let pendingCount = 0;
-
-    upcomingCashFlows.forEach((flow) => {
-      if (flow.status !== 'pending') return;
-      const flowDate = new Date(flow.dueDate);
-      if (flowDate <= limit30 || flow.recurrence === 'monthly' || flow.recurrence === 'weekly') {
-        pendingCount++;
-        if (flow.type === 'expense') {
-          committedOutflows += flow.amount;
-        } else {
-          expectedInflows += flow.amount;
-        }
-      }
-    });
-
-    const netImpact = expectedInflows - committedOutflows;
-
-    return {
-      committedOutflows,
-      expectedInflows,
-      netImpact,
-      pendingCount,
-    };
-  }, [upcomingCashFlows]);
-
-  // Filtered List
-  const filteredList = useMemo(() => {
-    return upcomingCashFlows.filter((flow) => {
-      if (activeTab === 'all') return true;
-      if (activeTab === 'outflow') return flow.type === 'expense';
-      if (activeTab === 'income') return flow.type === 'income';
-      return true;
-    });
-  }, [upcomingCashFlows, activeTab]);
-
-  const handleCreate = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setErrorMsg(null);
-
-    const numAmount = parseFloat(amount);
-    if (!title.trim()) {
-      setErrorMsg('Please enter a descriptive title for this upcoming payment or receipt.');
-      return;
-    }
-    if (isNaN(numAmount) || numAmount <= 0) {
-      setErrorMsg('Amount must be greater than zero.');
-      return;
-    }
-    if (!dueDate) {
-      setErrorMsg('Please select a valid scheduled due date.');
-      return;
-    }
-
-    try {
-      setIsSubmitting(true);
-      await addUpcomingCashFlow({
-        title: title.trim(),
-        amount: numAmount,
-        type,
-        category,
-        dueDate,
-        recurrence,
-        status: 'pending',
-        accountId: targetAccountId || primaryAccountId,
-        notes: notes.trim() || undefined,
-      });
-
-      // Reset form
-      setTitle('');
-      setAmount('');
-      setNotes('');
-      setShowAddForm(false);
-    } catch (err: any) {
-      setErrorMsg(err.message || 'Failed to add upcoming cashflow.');
-    } finally {
-      setIsSubmitting(false);
-    }
-  };
+    upcomingCashFlows,
+    deleteUpcomingCashFlow,
+    markUpcomingCashFlowStatus,
+    activeTab,
+    setActiveTab,
+    showAddForm,
+    setShowAddForm,
+    isSubmitting,
+    title,
+    setTitle,
+    amount,
+    setAmount,
+    type,
+    setType,
+    category,
+    setCategory,
+    dueDate,
+    setDueDate,
+    recurrence,
+    setRecurrence,
+    targetAccountId,
+    setTargetAccountId,
+    notes,
+    setNotes,
+    errorMsg,
+    summary30D,
+    filteredList,
+    handleCreate,
+  } = useUpcomingFlowsLogic();
 
   if (!isOpen) return null;
 

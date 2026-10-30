@@ -157,3 +157,4 @@ financeRouter.get('/finance/metrics/explanation/:key', (req: Request, res: Respo
     timestamp: new Date().toISOString(),
   } as ApiResponse);
 });
+

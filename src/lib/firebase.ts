@@ -81,6 +81,8 @@ export async function testConnection() {
     }
   }
 }
-testConnection();
+if (typeof window !== 'undefined') {
+  testConnection();
+}
 
 export { signInWithPopup, signOut };

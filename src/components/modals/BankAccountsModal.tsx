@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import {
   Building2,
   Plus,
@@ -13,8 +13,8 @@ import {
   ArrowUpRight,
   ArrowDownRight,
 } from 'lucide-react';
-import { useCash } from '../../context/CashContext';
-import { AccountType, BankAccount } from '../../types/finance';
+import { useAccountForm } from '../../hooks';
+import { AccountType } from '../../types/finance';
 import { formatINR } from '../../utils/finance';
 
 interface BankAccountsModalProps {
@@ -26,108 +26,35 @@ export const BankAccountsModal: React.FC<BankAccountsModalProps> = ({ isOpen, on
   const {
     accounts,
     totalCashPosition,
-    addAccount,
-    updateAccount,
-    deleteAccount,
+    canDelete,
+    isAddingNew,
+    setIsAddingNew,
+    editingAccountId,
+    name,
+    setName,
+    bankName,
+    setBankName,
+    accountType,
+    setAccountType,
+    initialBalance,
+    setInitialBalance,
+    accountNumberMasked,
+    setAccountNumberMasked,
+    color,
+    setColor,
+    isDefault,
+    setIsDefault,
+    error,
+    resetForm,
+    handleStartAdd,
+    handleStartEdit,
+    handleSave,
+    handleDelete,
+    handleSetDefault,
     setDefaultAccount,
-    canPerform,
-  } = useCash();
-
-  const canDelete = canPerform('delete_account');
-
-  const [isAddingNew, setIsAddingNew] = useState(false);
-  const [editingAccountId, setEditingAccountId] = useState<string | null>(null);
-
-  // Form states
-  const [name, setName] = useState('');
-  const [bankName, setBankName] = useState('HDFC Bank');
-  const [accountType, setAccountType] = useState<AccountType>('current');
-  const [initialBalance, setInitialBalance] = useState<number>(0);
-  const [accountNumberMasked, setAccountNumberMasked] = useState('');
-  const [color, setColor] = useState('#10b981');
-  const [isDefault, setIsDefault] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  } = useAccountForm();
 
   if (!isOpen) return null;
-
-  const resetForm = () => {
-    setName('');
-    setBankName('HDFC Bank');
-    setAccountType('current');
-    setInitialBalance(0);
-    setAccountNumberMasked('');
-    setColor('#10b981');
-    setIsDefault(false);
-    setError(null);
-    setIsAddingNew(false);
-    setEditingAccountId(null);
-  };
-
-  const handleStartAdd = () => {
-    resetForm();
-    setIsAddingNew(true);
-  };
-
-  const handleStartEdit = (account: BankAccount) => {
-    setEditingAccountId(account.id);
-    setName(account.name);
-    setBankName(account.bankName);
-    setAccountType(account.accountType);
-    setInitialBalance(account.initialBalance);
-    setAccountNumberMasked(account.accountNumberMasked || '');
-    setColor(account.color || '#10b981');
-    setIsDefault(!!account.isDefault);
-    setIsAddingNew(false);
-    setError(null);
-  };
-
-  const handleSave = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!name.trim()) {
-      setError('Account name is required.');
-      return;
-    }
-    if (!bankName.trim()) {
-      setError('Bank name is required.');
-      return;
-    }
-
-    if (editingAccountId) {
-      await updateAccount(editingAccountId, {
-        name: name.trim(),
-        bankName: bankName.trim(),
-        accountType,
-        initialBalance: Number(initialBalance) || 0,
-        accountNumberMasked: accountNumberMasked.trim() || undefined,
-        color,
-      });
-      if (isDefault) {
-        await setDefaultAccount(editingAccountId);
-      }
-    } else {
-      await addAccount({
-        name: name.trim(),
-        bankName: bankName.trim(),
-        accountType,
-        initialBalance: Number(initialBalance) || 0,
-        accountNumberMasked: accountNumberMasked.trim() || undefined,
-        color,
-        isDefault,
-      });
-    }
-
-    resetForm();
-  };
-
-  const handleDelete = async (id: string) => {
-    if (accounts.length <= 1) {
-      alert('You must have at least one active bank account.');
-      return;
-    }
-    if (confirm('Are you sure you want to delete this bank account?')) {
-      await deleteAccount(id);
-    }
-  };
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/70 backdrop-blur-sm animate-fade-in overflow-y-auto">

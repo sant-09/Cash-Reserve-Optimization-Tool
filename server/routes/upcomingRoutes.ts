@@ -114,3 +114,4 @@ upcomingRouter.delete('/upcoming/:id', verifyAuthToken, (req: Request, res: Resp
     timestamp: new Date().toISOString(),
   } as ApiResponse);
 });
+
