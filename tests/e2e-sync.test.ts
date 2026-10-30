@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { calculateCashHealth, generateHeadlineSummary, getNextShortfallInfo, getHealthStatus } from '../src/utils/finance';
+import { calculateCashHealth, generateHeadlineSummary, getHealthStatus } from '../src/utils/finance';
 import { validateUserSettings, validateTransactionData } from './validation.test';
 import { Transaction, UserSettings } from '../src/types/finance';
 

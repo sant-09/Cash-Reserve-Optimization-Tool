@@ -8,7 +8,6 @@ import {
   HealthStatus,
   MetricCalculationKey,
   SavedScenario,
-  ScenarioPreset,
   ShortfallInfo,
   SmartRecommendation,
   TotalCashPosition,
@@ -570,9 +569,6 @@ export const CashProvider: React.FC<{ children: React.ReactNode }> = ({ children
     } else {
       // LocalStorage / Demo mode with Schema v3 migration & accounts
       try {
-        const rawVersion = localStorage.getItem(STORAGE_KEYS.SCHEMA_VERSION);
-        const version = rawVersion ? parseInt(rawVersion, 10) : 1;
-
         const savedTx = localStorage.getItem(STORAGE_KEYS.TX);
         const savedInitBal = localStorage.getItem(STORAGE_KEYS.INITIAL_BAL);
         const savedMinCash = localStorage.getItem(STORAGE_KEYS.MIN_CASH);
@@ -776,7 +772,7 @@ export const CashProvider: React.FC<{ children: React.ReactNode }> = ({ children
     } catch {}
   };
 
-  const canPerform = (action: 'manage_settings' | 'delete_account' | 'configure_alerts') => {
+  const canPerform = (_action: 'manage_settings' | 'delete_account' | 'configure_alerts') => {
     const isOwner = (user?.role ?? 'owner') === 'owner';
     if (isOwner) {
       return { allowed: true };

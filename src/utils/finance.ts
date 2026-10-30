@@ -32,14 +32,13 @@ import {
   TransactionCategory,
   TransactionType,
   UpcomingCashFlow,
-  UpcomingCashFlowCategory,
   WhatIfScenario,
   AlertRule,
   TriggeredAlert,
   AlertDispatchResult,
-  ActivityLogEntry,
   MonthlyReportData,
   UserRole,
+  ALL_TRANSACTION_CATEGORIES,
 } from '../types/finance';
 
 
@@ -326,7 +325,7 @@ export function generateForecast(
 /**
  * Identify the next major anticipated cash outflow (e.g. Salaries on 1st/7th, GST on 20th)
  */
-export function getNextMajorCashNeed(transactions: Transaction[]): {
+export function getNextMajorCashNeed(_transactions?: Transaction[]): {
   date: string;
   formattedDate: string;
   reason: string;
@@ -863,7 +862,7 @@ export const FINANCE_TERMS: Record<FinanceTermKey, FinanceTermDefinition> = {
 export function getRecommendedNextAction(
   view: 'dashboard' | 'cashflow' | 'forecast' | 'vault3d',
   metrics: CashHealthMetrics,
-  language: AppLanguage = 'en'
+  _language: AppLanguage = 'en'
 ): RecommendedAction {
   const status = getHealthStatus(metrics);
 
@@ -1144,22 +1143,7 @@ export function cleanCurrencyAmount(rawAmount: any): number {
   return isNaN(val) || !isFinite(val) ? 0 : Math.abs(val);
 }
 
-const KNOWN_CATEGORIES: TransactionCategory[] = [
-  'Client Payment',
-  'Product Sales',
-  'Consulting / Services',
-  'Other Inflow',
-  'Staff Salaries',
-  'Office Rent',
-  'Inventory / Stock',
-  'Vendor / Supplier',
-  'Utilities & Wifi',
-  'Taxes & GST',
-  'Marketing & Ads',
-  'Software & SaaS',
-  'Logistics & Shipping',
-  'Miscellaneous Expense',
-];
+const KNOWN_CATEGORIES = ALL_TRANSACTION_CATEGORIES;
 
 /**
  * Smart category matcher from transaction description / narration

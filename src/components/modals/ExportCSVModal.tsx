@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { X, Download, FileSpreadsheet, Check, CheckCircle2 } from 'lucide-react';
+import { X, Download, FileSpreadsheet, CheckCircle2 } from 'lucide-react';
 import { Transaction } from '../../types/finance';
 import { exportTransactionsToCSV, formatINR } from '../../utils/finance';
 import { useAuth } from '../../context/AuthContext';
@@ -46,7 +46,6 @@ export const ExportCSVModal: React.FC<ExportCSVModalProps> = ({
   const totalOutflow = targetList
     .filter((t) => t.type === 'expense')
     .reduce((sum, t) => sum + t.amount, 0);
-  const netSurplus = totalInflow - totalOutflow;
 
   const handleDownload = () => {
     const csvData = exportTransactionsToCSV(targetList, {

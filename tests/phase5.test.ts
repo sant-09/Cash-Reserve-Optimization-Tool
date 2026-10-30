@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { formatINR, formatCompactINR } from '../src/utils/finance';
-import { VaultDisplayMode, CashHealthMetrics, BankAccount } from '../src/types/finance';
+import { VaultDisplayMode, BankAccount } from '../src/types/finance';
 
 test('Phase 5 - 3D & Flat 2D Vault Requirements', async (t) => {
   await t.test('1. VaultDisplayMode type supports both "3d" and "2d"', () => {
@@ -104,7 +104,7 @@ test('Phase 5 - 3D & Flat 2D Vault Requirements', async (t) => {
       },
     ];
 
-    const balances = [1500000, 950000];
+    const balances = accounts.map((a) => a.initialBalance);
     const totalBalance = balances.reduce((a, b) => a + b, 0);
     assert.equal(totalBalance, 2450000);
 

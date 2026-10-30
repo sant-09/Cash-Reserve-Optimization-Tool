@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { ShieldCheck, ShieldAlert, ChevronDown, Check, UserCheck, AlertTriangle } from 'lucide-react';
+import { ShieldCheck, ShieldAlert, ChevronDown, Check, AlertTriangle } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { UserRole } from '../../types/finance';
 

@@ -4,27 +4,13 @@ import {
   Transaction,
   TransactionCategory,
   TransactionType,
+  INCOME_CATEGORIES,
+  EXPENSE_CATEGORIES,
 } from '../types/finance';
 
-export const INCOME_CATEGORIES: TransactionCategory[] = [
-  'Client Payment',
-  'Product Sales',
-  'Consulting / Services',
-  'Other Inflow',
-];
-
-export const EXPENSE_CATEGORIES: TransactionCategory[] = [
-  'Staff Salaries',
-  'Office Rent',
-  'Inventory / Stock',
-  'Vendor / Supplier',
-  'Utilities & Wifi',
-  'Taxes & GST',
-  'Marketing & Ads',
-  'Software & SaaS',
-  'Logistics & Shipping',
-  'Miscellaneous Expense',
-];
+export { INCOME_CATEGORIES, EXPENSE_CATEGORIES };
+export const DEFAULT_INCOME_CATEGORIES = INCOME_CATEGORIES;
+export const DEFAULT_EXPENSE_CATEGORIES = EXPENSE_CATEGORIES;
 
 /**
  * Custom hook managing transaction creation/editing form state,

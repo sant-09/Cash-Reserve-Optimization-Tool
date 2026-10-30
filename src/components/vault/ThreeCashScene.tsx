@@ -2,12 +2,10 @@ import React, { useEffect, useRef, useState } from 'react';
 import * as THREE from 'three';
 import { RoomEnvironment } from 'three/examples/jsm/environments/RoomEnvironment.js';
 import { useCash } from '../../context/CashContext';
-import { formatCompactINR, formatINR } from '../../utils/finance';
+import { formatINR } from '../../utils/finance';
 import { VaultDisplayMode } from '../../types/finance';
 import { Vault2DView } from './Vault2DView';
 import {
-  Maximize2,
-  Minimize2,
   Rotate3d,
   Layers,
   Sparkles,

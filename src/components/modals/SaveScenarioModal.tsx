@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { BookmarkPlus, X, Sparkles, Check, AlertCircle } from 'lucide-react';
+import { BookmarkPlus, X } from 'lucide-react';
 import { useCash } from '../../context/CashContext';
 import { formatINR } from '../../utils/finance';
 

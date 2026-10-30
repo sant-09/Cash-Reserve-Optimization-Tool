@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import http from 'node:http';
-import { app, inMemoryActivityLogs } from '../server';
+import { app } from '../server';
 import { generateInitialTransactions } from '../src/data/sampleData';
 import {
   calculateCashHealth,
@@ -19,8 +19,6 @@ import {
   AlertRule,
   CashHealthMetrics,
   ShortfallInfo,
-  TriggeredAlert,
-  UserRole,
 } from '../src/types/finance';
 
 function makeRequest(
@@ -68,7 +66,7 @@ function makeRequest(
   });
 }
 
-test('Requirement 13: RBAC backend rejection (Owner vs Finance role)', async (t) => {
+test('Requirement 13: RBAC backend rejection (Owner vs Finance role)', async () => {
   const server = http.createServer(app);
   await new Promise<void>((resolve) => server.listen(0, resolve));
 

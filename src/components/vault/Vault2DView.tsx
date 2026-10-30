@@ -3,17 +3,12 @@ import {
   ShieldCheck,
   Sparkles,
   AlertTriangle,
-  Wallet,
   Building2,
   Clock,
   Flame,
-  ArrowUpRight,
-  ArrowDownRight,
   Lock,
   Unlock,
   CheckCircle2,
-  Layers,
-  Info,
 } from 'lucide-react';
 import { useCash } from '../../context/CashContext';
 import { formatINR, formatCompactINR } from '../../utils/finance';

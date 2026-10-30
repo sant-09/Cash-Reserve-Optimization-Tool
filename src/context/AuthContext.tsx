@@ -46,7 +46,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     const unsubscribe = onAuthStateChanged(auth, async (fbUser: FirebaseUser | null) => {
       if (fbUser) {
         // Authenticated with Firebase
-        const userPath = `users/${fbUser.uid}`;
         try {
           const userDoc = await getDoc(doc(db, 'users', fbUser.uid));
           let businessName = 'My Enterprise';

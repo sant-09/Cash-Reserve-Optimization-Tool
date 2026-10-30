@@ -215,11 +215,6 @@ export function useCashFlowData() {
     }
   };
 
-  const handleAutoReserve = () => {
-    applyAutoRecommendedReserve();
-    setTempMinReserve(metrics.recommendedReserve.toString());
-  };
-
   const handleCloseModal = () => {
     setIsModalOpen(false);
     setEditingTx(null);
@@ -267,7 +262,6 @@ export function useCashFlowData() {
     setTempMinReserve,
     reserveSavedFeedback,
     handleSaveMinReserve,
-    handleAutoReserve,
     applyAutoRecommendedReserve,
     // Filtered data & aggregates
     filteredTransactions,

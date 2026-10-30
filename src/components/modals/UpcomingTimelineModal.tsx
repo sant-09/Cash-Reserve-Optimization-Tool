@@ -9,7 +9,6 @@ import {
   ArrowUpRight,
   Landmark,
   Trash2,
-  AlertCircle,
   FileText,
   Building,
   Receipt,
@@ -19,7 +18,7 @@ import {
   Sparkles,
 } from 'lucide-react';
 import { useUpcomingFlowsLogic } from '../../hooks';
-import { formatINR, formatCompactINR } from '../../utils/finance';
+import { formatINR } from '../../utils/finance';
 import { UpcomingCashFlowCategory, UpcomingCashFlowRecurrence } from '../../types/finance';
 
 interface UpcomingTimelineModalProps {
@@ -41,7 +40,6 @@ const CATEGORY_ICONS: Record<UpcomingCashFlowCategory, { label: string; icon: an
 export const UpcomingTimelineModal: React.FC<UpcomingTimelineModalProps> = ({ isOpen, onClose }) => {
   const {
     accounts,
-    primaryAccountId,
     upcomingCashFlows,
     deleteUpcomingCashFlow,
     markUpcomingCashFlowStatus,

@@ -2,18 +2,10 @@ import React, { useMemo } from 'react';
 import {
   Calculator,
   X,
-  ArrowRight,
   Sparkles,
-  HelpCircle,
-  TrendingDown,
-  Clock,
-  ShieldCheck,
-  CheckCircle2,
-  AlertTriangle,
-  FileText,
 } from 'lucide-react';
 import { useCash } from '../../context/CashContext';
-import { getMetricCalculationExplanation, formatINR } from '../../utils/finance';
+import { getMetricCalculationExplanation } from '../../utils/finance';
 import { MetricCalculationKey } from '../../types/finance';
 
 interface CalculationModalProps {

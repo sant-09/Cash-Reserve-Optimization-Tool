@@ -3,15 +3,9 @@ import {
   Building2,
   Plus,
   Trash2,
-  Check,
   X,
-  CreditCard,
-  ShieldCheck,
   Star,
-  Wallet,
   Landmark,
-  ArrowUpRight,
-  ArrowDownRight,
 } from 'lucide-react';
 import { useAccountForm } from '../../hooks';
 import { AccountType } from '../../types/finance';
@@ -28,7 +22,6 @@ export const BankAccountsModal: React.FC<BankAccountsModalProps> = ({ isOpen, on
     totalCashPosition,
     canDelete,
     isAddingNew,
-    setIsAddingNew,
     editingAccountId,
     name,
     setName,
@@ -50,7 +43,6 @@ export const BankAccountsModal: React.FC<BankAccountsModalProps> = ({ isOpen, on
     handleStartEdit,
     handleSave,
     handleDelete,
-    handleSetDefault,
     setDefaultAccount,
   } = useAccountForm();
 

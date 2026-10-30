@@ -4,14 +4,10 @@ import {
   X,
   Smartphone,
   Mail,
-  Shield,
   CheckCircle,
-  AlertTriangle,
-  Send,
   Lock,
 } from 'lucide-react';
 import { useAlertRulesLogic } from '../../hooks';
-import { AlertRule } from '../../types/finance';
 
 interface AlertSettingsModalProps {
   isOpen: boolean;
@@ -21,7 +17,6 @@ interface AlertSettingsModalProps {
 export const AlertSettingsModal: React.FC<AlertSettingsModalProps> = ({ isOpen, onClose }) => {
   const {
     alertRules,
-    user,
     isOwner,
     testStatus,
     isSendingTest,

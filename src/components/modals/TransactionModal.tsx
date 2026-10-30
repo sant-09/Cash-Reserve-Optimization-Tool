@@ -45,7 +45,7 @@ export const TransactionModal: React.FC<TransactionModalProps> = ({
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm animate-fade-in">
       <div className="bg-white dark:bg-slate-900 rounded-2xl max-w-lg w-full border border-slate-200 dark:border-slate-800 shadow-2xl overflow-hidden">
-        
+
         {/* Header */}
         <div className="flex items-center justify-between px-6 py-4 border-b border-slate-200 dark:border-slate-800">
           <h2 className="text-base font-bold text-slate-900 dark:text-white">
@@ -76,22 +76,20 @@ export const TransactionModal: React.FC<TransactionModalProps> = ({
               <button
                 type="button"
                 onClick={() => handleTypeChange('income')}
-                className={`py-2 text-xs font-bold rounded-lg transition-all ${
-                  type === 'income'
+                className={`py-2 text-xs font-bold rounded-lg transition-all ${type === 'income'
                     ? 'bg-emerald-600 text-white shadow-sm'
                     : 'text-slate-600 dark:text-slate-400 hover:text-slate-900'
-                }`}
+                  }`}
               >
                 + Cash Inflow (Income)
               </button>
               <button
                 type="button"
                 onClick={() => handleTypeChange('expense')}
-                className={`py-2 text-xs font-bold rounded-lg transition-all ${
-                  type === 'expense'
+                className={`py-2 text-xs font-bold rounded-lg transition-all ${type === 'expense'
                     ? 'bg-rose-600 text-white shadow-sm'
                     : 'text-slate-600 dark:text-slate-400 hover:text-slate-900'
-                }`}
+                  }`}
               >
                 - Cash Outflow (Expense)
               </button>

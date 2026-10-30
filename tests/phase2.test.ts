@@ -6,7 +6,6 @@ import {
   cleanCurrencyAmount,
   inferTransactionCategory,
   parseAndValidateCSV,
-  createDefaultAccounts,
   calculateTotalCashPosition,
   exportTransactionsToCSV,
 } from '../src/utils/finance';

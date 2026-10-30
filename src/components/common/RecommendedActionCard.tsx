@@ -1,5 +1,5 @@
 import React from 'react';
-import { ArrowRight, Sparkles, CheckCircle2, AlertTriangle, ShieldCheck } from 'lucide-react';
+import { ArrowRight, Sparkles, AlertTriangle, ShieldCheck } from 'lucide-react';
 import { useCash, AppView } from '../../context/CashContext';
 import { getRecommendedNextAction } from '../../utils/finance';
 

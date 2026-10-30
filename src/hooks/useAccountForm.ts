@@ -20,7 +20,6 @@ export function useAccountForm() {
   const {
     accounts,
     totalCashPosition,
-    primaryAccountId,
     addAccount,
     updateAccount,
     deleteAccount,
@@ -129,14 +128,9 @@ export function useAccountForm() {
     }
   };
 
-  const handleSetDefault = async (accountId: string) => {
-    await setDefaultAccount(accountId);
-  };
-
   return {
     accounts,
     totalCashPosition,
-    primaryAccountId,
     canDelete,
     isAddingNew,
     setIsAddingNew,
@@ -161,7 +155,6 @@ export function useAccountForm() {
     handleStartEdit,
     handleSave,
     handleDelete,
-    handleSetDefault,
     setDefaultAccount,
   };
 }

@@ -16,6 +16,31 @@ export type TransactionCategory =
   | 'Logistics & Shipping'
   | 'Miscellaneous Expense';
 
+export const INCOME_CATEGORIES: readonly TransactionCategory[] = [
+  'Client Payment',
+  'Product Sales',
+  'Consulting / Services',
+  'Other Inflow',
+] as const;
+
+export const EXPENSE_CATEGORIES: readonly TransactionCategory[] = [
+  'Staff Salaries',
+  'Office Rent',
+  'Inventory / Stock',
+  'Vendor / Supplier',
+  'Utilities & Wifi',
+  'Taxes & GST',
+  'Marketing & Ads',
+  'Software & SaaS',
+  'Logistics & Shipping',
+  'Miscellaneous Expense',
+] as const;
+
+export const ALL_TRANSACTION_CATEGORIES: readonly TransactionCategory[] = [
+  ...INCOME_CATEGORIES,
+  ...EXPENSE_CATEGORIES,
+] as const;
+
 export interface Transaction {
   id: string;
   date: string; // YYYY-MM-DD

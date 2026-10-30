@@ -21,7 +21,6 @@ export function useUpcomingFlowsLogic() {
   const {
     upcomingCashFlows,
     addUpcomingCashFlow,
-    updateUpcomingCashFlow,
     deleteUpcomingCashFlow,
     markUpcomingCashFlowStatus,
     accounts,

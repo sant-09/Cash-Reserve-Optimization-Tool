@@ -1,17 +1,10 @@
 import React, { useState } from 'react';
 import {
-  Wallet,
-  ShieldCheck,
   ArrowRight,
   ArrowLeft,
   Sparkles,
   Building2,
   FileSpreadsheet,
-  CheckCircle2,
-  AlertCircle,
-  HelpCircle,
-  X,
-  CreditCard,
   PlusCircle,
 } from 'lucide-react';
 import { useCash } from '../../context/CashContext';

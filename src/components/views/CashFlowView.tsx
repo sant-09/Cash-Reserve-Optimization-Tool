@@ -2,22 +2,18 @@ import React from 'react';
 import {
   Plus,
   Search,
-  Filter,
   Download,
   Printer,
   Trash2,
   Edit2,
-  Calculator,
   ShieldCheck,
-  Calendar,
   Check,
   Sparkles,
-  Building2,
   FileSpreadsheet,
   Lock,
 } from 'lucide-react';
 import { useCashFlowData } from '../../hooks';
-import { exportTransactionsToCSV, formatINR, formatCompactINR } from '../../utils/finance';
+import { formatINR, formatCompactINR } from '../../utils/finance';
 import { TransactionModal } from '../modals/TransactionModal';
 import { ExportCSVModal } from '../modals/ExportCSVModal';
 import { CSVImportModal } from '../modals/CSVImportModal';
@@ -27,7 +23,6 @@ import { RecommendedActionCard } from '../common/RecommendedActionCard';
 export const CashFlowView: React.FC = () => {
   const {
     transactions,
-    minCashRequired,
     metrics,
     accounts,
     canManageSettings,
@@ -60,7 +55,6 @@ export const CashFlowView: React.FC = () => {
     setTempMinReserve,
     reserveSavedFeedback,
     handleSaveMinReserve,
-    handleAutoReserve,
     applyAutoRecommendedReserve,
     filteredTransactions,
     availableCategories,
